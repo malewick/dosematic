@@ -1,0 +1,12 @@
+\select@language {english}
+\contentsline {part}{I\hspace {1em}Acute Exposure Dose Estimation}{2}
+\contentsline {section}{\numberline {1}Dose estimation uncertainty calculation}{2}
+\contentsline {subsection}{\numberline {1.1}Method A}{3}
+\contentsline {subsection}{\numberline {1.2}Method B}{3}
+\contentsline {subsection}{\numberline {1.3}Method C}{4}
+\contentsline {section}{\numberline {2}Conclusions}{4}
+\contentsline {part}{II\hspace {1em}Partial Exposure Dose Estimation}{5}
+\contentsline {section}{\numberline {3}Calculation of output values}{5}
+\contentsline {subsection}{\numberline {3.1}Basic Statistics}{5}
+\contentsline {subsection}{\numberline {3.2}Dolphin Method}{5}
+\contentsline {subsection}{\numberline {3.3}Qdr Method}{6}

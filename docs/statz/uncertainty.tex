@@ -1,0 +1,307 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[OT4]{fontenc}
+\usepackage[MeX]{polski}
+\usepackage[polish,english]{babel} 
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{url}
+\usepackage{float}
+\usepackage[affil-it]{authblk}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tocloft}
+\usepackage{listings}
+\usepackage{subfiles}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{filecontents}
+\usepackage{mathtools}
+\usepackage[skip=2pt,font=small]{caption}
+
+\addtolength{\textwidth}{3cm}
+\addtolength{\hoffset}{-1.5cm}
+\addtolength{\textheight}{2cm}
+\addtolength{\voffset}{-1.5cm}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\fancyhead{}
+\fancyhead[RO,LE]{\slshape \rightmark}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage}
+
+\usepackage{tikz}
+\usetikzlibrary{calc,fit,shapes,arrows,patterns}
+\usetikzlibrary{positioning,calc}
+
+\def\oran{orange!30}
+\definecolor{shine}{rgb}{0,0.243137254902,0.43137254902}
+\definecolor{ggreen}{rgb}{0,0.292372549002,0.0}
+\definecolor{bblue}{cmyk}{0.637, 0.392, 0, 0.6}
+\definecolor{rred}{cmyk}{0, 0.819, 0.756, 0.502}
+
+\newcommand{\shine}[1]{\textcolor{shine}{\textit{#1}}}
+\newcommand{\dig}[1]{\textcolor{bblue}{#1}}
+
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+
+\linespread{1.15}
+
+\cftsetindents{section}{0.5in}{0.5in}
+\cftsetindents{subsection}{0.5in}{0.7in}
+\cftsetindents{subsubsection}{0.5in}{0.9in}
+\cftsetindents{paragraph}{0.5in}{1.1in}
+
+\author{Maciej Lewicki}
+\title{DoseMatic -- the guide to the statistical methods}
+
+\begin{document}
+\newcommand{\va}{\vspace{10pt}}
+\newcommand{\vb}{\vspace{ 3pt}}
+
+\maketitle
+\vspace{1cm}
+Based on:\\
+\textbf{INTERNATIONAL ATOMIC ENERGY AGENCY, VIENNA, 2001}\\
+\textit{"Cytogenetic Analysis for Radiation Dose Assessment -- A Manual"}\\
+\url{http://www-pub.iaea.org/MTCD/publications/PDF/TRS405_scr.pdf}\va\\
+...But a little more explicit.
+\vspace{3cm}
+
+%%% TABLE OF CONTENTS %%%
+\thispagestyle{empty}
+\small{
+\tableofcontents
+}
+\thispagestyle{plain}
+\pagebreak
+
+\part{Acute Exposure Dose Estimation}
+\section{Dose estimation uncertainty calculation}
+In order to express the uncertainty of the dose assessment the $95\%$ confidence interval (later refered as CI$95\%$) is chosen as a reasonable limit. It defines an interval of $95\%$ probability of enclosing the true dose.\\
+The confidence limits are affected by two sources of uncertainty:
+\begin{itemize}
+\item Poisson nature of of the yields aberrations
+\item and uncertainties of the calibration curve parameters (following normal distribution).
+\end{itemize}
+The paper refers to three different approaches, none of them being the exact one, but each has a region of usability.\\
+At first let us derive the basic statistics associated with the calibration curve:
+\begin{itemize}
+\item The calibration curve equation:
+\begin{equation} \label{eq:curve}
+Y(D) = c + \alpha D + \beta D^2
+\end{equation}
+\item The inverse function, extracting the dose D:
+\begin{equation} \label{eq:inverse}
+D(Y) = \frac{2}{\beta} \left(  -\alpha + \sqrt{\alpha^2 + 4 \beta (Y-c)} \right)
+\end{equation}
+\item The calibration curve (eq.\ref{eq:curve}) differentials with respect to fitting parameters:
+\begin{equation} \label{eq:curvediff}
+\frac{\partial Y}{\partial c} = 1,~~~\frac{\partial Y}{\partial}{\alpha} = D,~~~\frac{\partial Y}{\partial \beta} = D^2
+\end{equation}
+\item The uncertainty of calibration curve:
+\begin{equation} \label{eq:ucurve}
+\begin{split}
+u_{\textrm{fit}}(Y) = \frac{\partial Y}{\partial c} \cdot u(c) + \frac{\partial Y}{\partial \alpha} \cdot u(\alpha) + \frac{\partial Y}{\partial \beta} \cdot u(\beta)\\
+u_{\textrm{fit}}(Y) =~~u(c)~~+~~D\cdot u(\alpha)~~+~~D^2 \cdot u(\beta)
+\end{split}
+\end{equation}
+\item The inverse function (eq.\ref{eq:inverse}) differentials with respect to fitting parameters:
+\begin{subequations}
+\begin{align}
+\frac{\partial D}{\partial c} &= \frac{4}{\sqrt{\alpha^2+4\beta(Y-c)}} \label{eq:invdiffc}\\
+\frac{\partial D}{\partial \alpha} &= -\frac{2}{\beta} + \frac{2\alpha}{\beta\sqrt{\alpha^2+4\beta(Y-c)}} \label{eq:invdiffa}\\
+\frac{\partial D}{\partial \beta} &= \frac{4(Y-c)}{\beta\sqrt{\alpha^2+4\beta(Y-c)}} - \frac{2\left( \sqrt{\alpha^2+4\beta(Y-c)} -a \right)}{\beta^2} \label{eq:invdiffb}
+\end{align}
+\end{subequations}
+\item Variance of arbitrary variable X:
+\begin{equation} \label{eq:var}
+\textrm{var}(X) = E\left[ (X-\bar X)^2 \right] = \frac{1}{n} \sum^{n}_{i} (X_i-\bar X)^2
+\end{equation}
+\item Covariance of arbitrary variables X and Y:
+\begin{equation} \label{eq:cov}
+\textrm{cov}(X) = E\left[ (X-\bar X)(Y-\bar Y) \right] = \frac{1}{n} \sum^{n}_{i} (X_i-\bar{X})(Y_i-\bar{Y})
+\end{equation}
+\item Standard error of arbitrary variable X:
+\begin{equation} \label{eq:stderr}
+\sigma(X) = \sqrt{\textrm{var}(X)} =  \sqrt{ \frac{1}{n} \sum^{n}_{i} (X_i-\bar X)^2 }
+\end{equation}
+\item Confidence intervals of $95\%$ (CI$95\%$) for given $sigma$ (eq.\ref{eq:stderr}):
+\begin{subequations}
+\begin{align}
+\textrm{lower CI95\%(X)} &= X - 1.96\cdot \sigma(X)\\
+\textrm{upper CI95\%(X)} &= X + 1.96\cdot \sigma(X)
+\end{align}
+\end{subequations}
+\end{itemize}
+
+\subsection{Method A}
+There are three steps of the procedure:
+\begin{enumerate}
+\item Calculate the dose $D$ from the inverse curve equation (eq.\ref{eq:inverse}) for a measured yield $Y$.
+
+\item Calculate the variance of dose -- $\textrm{var}(D)$ -- from a given equation:
+\begin{equation} \label{eq:Dvar}
+\begin{split}
+\textrm{var}(X)~~~=~~~
+\left( \frac{\partial D}{\partial c} \right)^2 \cdot \textrm{var}(c)~~+~~ 
+\left( \frac{\partial D}{\partial \alpha} \right)^2 \cdot \textrm{var}(\alpha)~~+~~ 
+\left( \frac{\partial D}{\partial \beta} \right)^2 \cdot \textrm{var}(\beta)~~+ \\
++~~\frac{\partial D}{\partial \alpha}\frac{\partial D}{\partial \beta} \cdot \textrm{cov}(\alpha,\beta)~~+~~ 
+\frac{\partial D}{\partial c}\frac{\partial D}{\partial \alpha} \cdot \textrm{cov}(c,\alpha)~~+~~ 
+\frac{\partial D}{\partial c}\frac{\partial D}{\partial \beta} \cdot \textrm{cov}(c,\beta)
+\end{split}
+\end{equation}
+Where all the derivatives are defined above, the variances of curve parameters are givevn by the fitting routine and the variance of the yield $Y$ is derived on the assumption of a Poisson distribution (pmf -- probability mass function, $k$ -- the number of counts, $n$ -- number of cells, $\lambda$ -- the mean number of counts):
+\begin{equation} \label{eq:Y}
+Y~~\equiv~~\frac{1}{n} \sum^n_i Y_i~~\equiv~~\lambda 
+\end{equation}
+\begin{equation} \label{eq:Ydist}
+\textrm{pmf}(Y_i) = P(k, \lambda) = \frac{\lambda^k e^{-k}}{k!}
+\end{equation}
+Thus the variance and $\sigma$ are equal respectively:
+\begin{equation} \label{eq:Yvar}
+\textrm{var}(Y) = \lambda,~~~~~\sigma(Y)=	\sqrt{\lambda}
+\end{equation}
+
+\item Now let us derive the CI$95\%$:
+\begin{equation} \label{eq:DCI}
+\begin{split}
+\textrm{lower CI}95\%(D) = D_L = D - 1.96\cdot \sigma(D) \\
+\textrm{upper CI}95\%(D) = D_U = D + 1.96\cdot \sigma(D)
+\end{split}
+\end{equation}
+\end{enumerate}
+
+\subsection{Method B}
+\begin{enumerate}
+\item Calculate the dose $D$ from the inverse curve equation (eq.\ref{eq:inverse}) for a measured yield $Y$.
+\item Estimate $Y$ error using curve's uncertaintiy (eq.\ref{eq:ucurve}):
+\begin{equation} \label{eq:err1}
+Y = Y \pm u_{\textrm{fit}}(Y)
+\end{equation}
+\item From the observed yield estimate its Poisson standard error (eq.\ref{eq:Yvar}):
+\begin{equation} \label{eq:err2}
+\sigma(Y) = \sqrt{\lambda}
+\end{equation}
+\item Add the errors from points 2 and 3 (eq. \ref{eq:err1} and \ref{eq:err2}):
+\begin{equation} \label{eq:err}
+u(Y) = \sqrt{ \left[ u_{\textrm{fit}}(Y) \right]^2 + \lambda }
+\end{equation}
+\begin{equation} \label{eq:YLU}
+Y_L = Y - u(Y),~~~~~Y_U = Y + u(Y)
+\end{equation}
+\item Now, using the inverse function (eq.\ref{eq:inverse}) calculate $D_U$ and $D_L$:
+\begin{equation} \label{eq:DLU}
+D_L = D(Y_L),~~~~~D_U = D(Y_U)
+\end{equation}
+\end{enumerate}
+
+\subsection{Method C}
+\begin{enumerate}
+\item Assuming Poisson distribution, calculate the CI$95\%$ on the observed yield:
+\begin{equation} \label{eq:YCI}
+\begin{split}
+Y_L = Y - 1.96\cdot \sigma(Y) \\
+Y_U = Y + 1.96\cdot \sigma(Y)
+\end{split}
+\end{equation}
+\item Now determine the intersection of the confidence limits $Y_L, Y_U$ with the calibration curve's upper limit and lower limit respectively (or with the curve itself for simplicity):
+ \begin{equation} \label{eq:inter1}
+\begin{split}
+Y_L = Y(D_L) + u(Y)~~~\rightarrow~~~D_L\\
+Y_U = Y(D_U) - u(Y)~~~\rightarrow~~~D_U\\
+\end{split}
+\end{equation}
+\begin{equation} \label{eq:inter2}
+\begin{split}
+D_L = D(Y_L - u(Y)) \\
+D_U = D(Y_U + u(Y)) \\
+\end{split}
+\end{equation}
+Or the simplified, straightforward version:
+\begin{equation} \label{eq:inter3}
+\begin{split}
+D_L = D(Y_L) \\
+D_U = D(Y_U) \\
+\end{split}
+\end{equation}
+\end{enumerate}
+
+\section{Conclusions}
+\textbf{Method A:}
+\begin{itemize}
+\item Obviously most accurate. Even almost exact -- if it were not for the usually wrong assumption on the normal distribution of the aberrations. This is a problem for low number of aberrations, which means low doses.
+\item This method is recommended for large number of scored aberrations (or high doses).
+\end{itemize}
+
+\noindent \textbf{Method B:}
+\begin{itemize}
+\item Suffers from similar defect as above.
+\item The region of recommended usage is when the uncertainty of measured yields is similar to the uncertainty of the calibration curve.
+\end{itemize}
+
+\noindent \textbf{Method C:}
+\begin{itemize}
+\item Takes into account the Poisson nature of the number of aberrations distribution.
+\item In the basic form overestimates the effect of calibration curve uncertainties.
+\item In the simplified form the curve uncertainties are not taken into account at all.
+\item To be used when the uncertainty of yields dominates over the uncertainty of the calibration curve.
+\end{itemize}
+
+
+\part{Partial Exposure Dose Estimation}
+\section{Calculation of output values}
+\subsection{Basic Statistics}
+\begin{itemize}
+	\item Standard deviation of a sample:
+	$$s = \sqrt{\frac{\sum_{i=1}^n{\left(x_i-\bar{x}\right)^2}}{n-1}}$$
+	\item Standard error -- based on standard deviation of a sample:
+	$$SE = \frac{\sigma}{n} \approx \frac{s}{n} $$
+	\item Dispertion index:
+	$$D = \frac{\sigma^2}{\mu} \approx \frac{s^2}{\bar{x}}$$
+	\item U-test:
+	$$u = \left(D-1\right)\cdot \sqrt{2\cdot\left(1-\frac{1}{\bar{x}}\right)} $$
+\end{itemize}
+\subsection{Dolphin Method}
+\begin{itemize}
+	\item Calculation of yield using Dolphin method:
+	$$\frac{Y}{1-e^{-Y}} = \frac{X}{N-n_0} $$
+	$$Yf = \frac{X}{N}$$
+	where:\\
+	$N$ -- number of cells scored,\\
+	$X$ -- number of observed dicentrics,\\
+	$n_0$ -- cells free of dicentrics,\\
+	$f$ -- fraction of irradiated body,\\
+	$Y$ -- yield:
+	$$
+	Y = W\left(\frac{e^{\frac{X}{n_0-N}}~X}{n_0-N}\right) - \frac{X}{n_0-N}
+	$$
+	where $W(\cdots)$ is the principal solution of a Lambert W-function.
+\end{itemize}
+\subsection{Qdr Method}
+\begin{itemize}
+	\item Calculation of yield using Qdr method:
+	$$
+	\textrm{Qdr} = \frac{X}{N_u} = \frac{Y}{1-e^{-Y_1-Y_2}}
+	$$
+	where:\\
+	$X$ -- number of dicentrics plus rings,\\
+	$N_u$ -- number of damaged cells,\\
+	$Y_1$ -- yield of dicentrics plus rings,\\
+	$Y_2$ -- yield of acentrics,\\
+	Qdr -- yield of dicentrics and rings among damaged cells,\\
+	$Y$ - yield:
+	$$
+	Y = \textrm{Qdr} \cdot \left( 1 - e^{-Y_1-Y_2} \right)
+	$$
+\end{itemize}
+
+\end{document}
+
+

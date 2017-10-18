@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 744.09448819 1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="drawing.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient4168"
+       inkscape:collect="always">
+      <stop
+         id="stop4188"
+         offset="0"
+         style="stop-color:#000000;stop-opacity:1;" />
+      <stop
+         id="stop4190"
+         offset="1"
+         style="stop-color:#000000;stop-opacity:0;" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4168"
+       id="radialGradient4174"
+       cx="285.45578"
+       cy="98.70477"
+       fx="285.45578"
+       fy="98.70477"
+       r="230.54352"
+       gradientTransform="matrix(1,0,0,0.14895236,0,84.002462)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4168"
+       id="linearGradient4284"
+       x1="269.31729"
+       y1="237.41905"
+       x2="268.78641"
+       y2="93.133331"
+       gradientUnits="userSpaceOnUse" />
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Roughen"
+       id="filter4802">
+      <feTurbulence
+         type="fractalNoise"
+         numOctaves="1"
+         seed="52"
+         baseFrequency="0.001 1.6319"
+         result="turbulence"
+         id="feTurbulence4804" />
+      <feDisplacementMap
+         in="SourceGraphic"
+         in2="turbulence"
+         scale="9.5"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         id="feDisplacementMap4806" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="312.96183"
+     inkscape:cy="852.16076"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1873"
+     inkscape:window-height="1056"
+     inkscape:window-x="47"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g4808">
+      <flowRoot
+         transform="matrix(1.3454949,0,0,1,-11.261805,-22.857143)"
+         style="font-style:normal;font-weight:normal;font-size:90px;line-height:125%;font-family:'URW Gothic L';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;-inkscape-font-specification:'URW Gothic L';font-stretch:normal;font-variant:normal;"
+         id="flowRoot3336"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3338"><rect
+             style="font-size:90px;-inkscape-font-specification:'URW Gothic L';font-family:'URW Gothic L';font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+             y="40.933632"
+             x="48.57143"
+             height="120.00001"
+             width="488.57141"
+             id="rect3340" /></flowRegion><flowPara
+           style="font-weight:normal"
+           id="flowPara3342">DoseMatic</flowPara></flowRoot>      <flowRoot
+         transform="matrix(1.3454949,0,0,-1,-10.936441,240.49554)"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:90px;line-height:125%;font-family:'URW Gothic L';-inkscape-font-specification:'URW Gothic L';letter-spacing:0px;word-spacing:0px;fill:url(#linearGradient4284);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;opacity:1;filter:url(#filter4802)"
+         id="flowRoot3336-8"
+         xml:space="preserve"><flowRegion
+           style="stroke:url(#radialGradient4174);fill-opacity:1.0;fill:url(#linearGradient4284)"
+           id="flowRegion3338-7"><rect
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:90px;font-family:'URW Gothic L';-inkscape-font-specification:'URW Gothic L';stroke:none;stroke-opacity:1;fill-opacity:1.0;fill:url(#linearGradient4284)"
+             y="40.933632"
+             x="48.57143"
+             height="120.00001"
+             width="488.57141"
+             id="rect3340-2" /></flowRegion><flowPara
+           style="font-weight:normal;stroke:none;stroke-opacity:1;fill-opacity:1.0;fill:url(#linearGradient4284)"
+           id="flowPara3342-1">DoseMatic</flowPara></flowRoot>    </g>
+  </g>
+</svg>
