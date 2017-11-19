@@ -7,7 +7,7 @@ from gtk import gdk
 
 from collections import OrderedDict
 
-import Image
+from PIL import Image
 
 import time
 import thread
@@ -16,6 +16,7 @@ import SplashScreen
 import Acute
 import Partial
 import Protracted
+import FunctionComparison
 
 
 print "GTK v" + '.'.join(str(i) for i in gtk.gtk_version)
@@ -227,22 +228,22 @@ class MainWindow(gtk.Window):
         scroll_text.set_border_width(10)
         
         # Buttons: help->[guide,credits], launch->[basic,advanced], options?
-        i_help = gtk.Image()
-        i_help.set_from_stock(gtk.STOCK_HELP, gtk.ICON_SIZE_LARGE_TOOLBAR)
-        help_button = gtk.Button()
-        help_button.add(i_help)
-        help_button.set_tooltip_text("Help");
+        #i_help = gtk.Image()
+        #i_help.set_from_stock(gtk.STOCK_HELP, gtk.ICON_SIZE_LARGE_TOOLBAR)
+        #help_button = gtk.Button()
+        #help_button.add(i_help)
+        #help_button.set_tooltip_text("Help");
         
         # Buttons: help->[guide,credits], launch->[basic,advanced], options?
         i_info = gtk.Image()
         i_info.set_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_LARGE_TOOLBAR)
-        info_button = gtk.Button()
+        info_button = gtk.LinkButton("http://malewick.web.cern.ch/malewick/dosematic/TRS405_scr.pdf")
         info_button.add(i_info)
         info_button.set_tooltip_text("Information");
         
         i_index = gtk.Image()
         i_index.set_from_stock(gtk.STOCK_INDEX, gtk.ICON_SIZE_LARGE_TOOLBAR)
-        index_button = gtk.Button()
+        index_button = gtk.LinkButton("http://malewick.web.cern.ch/malewick/dosematic/uncertainty.pdf")
         index_button.add(i_index)
         index_button.set_tooltip_text("Handbook and Documentation");
         
@@ -251,7 +252,7 @@ class MainWindow(gtk.Window):
         hruler = gtk.HSeparator()
         #buttons_vbox.pack_start(hruler, False, False, 20)
         buttons_vbox.pack_start(info_button, False, False, 5)
-        buttons_vbox.pack_start(help_button, False, False, 5)
+        #buttons_vbox.pack_start(help_button, False, False, 5)
         buttons_vbox.pack_start(index_button, False, False, 5)
 
         hbox = gtk.HBox()
@@ -320,6 +321,11 @@ class MainWindow(gtk.Window):
             print "where eagles dare"
             manager = Protracted.UserInterface(key, labels[key])
             manager.show_all()
+        elif "Function Comparison" in desc[key][num]:
+            print "and where they don't"
+            manager = FunctionComparison.UserInterface()
+            manager.show_all()
+
 
 
 #______________MAIN______________#

@@ -71,10 +71,10 @@ def confidence(x, xdata, n, mean_x, dof, RMSE):
     t = stats.t.isf(alpha/2., df=dof)
     #conf = t * np.sqrt((RSS/(n-2))*(1.0/n + ( (x-mean_x)**2 / ((np.sum(x**2)) - n*(mean_x**2)))))
     Sxx = np.sum(xdata**2) - np.sum(xdata)**2/n
-    se_a = RMSE / np.sqrt(Sxx)
-    se_b = RMSE * np.sqrt(np.sum(xdata**2)/(n*Sxx))
+    se_a = RMSE / np.sqrt(Sxx) if Sxx != 0  else 0.0
+    se_b = RMSE * np.sqrt(np.sum(xdata**2)/(n*Sxx)) if Sxx != 0  else 0.0
 
-    conf = t * RMSE * np.sqrt(  1./n + (x-mean_x)**2/Sxx)
+    conf = t * RMSE * np.sqrt(  1./n + (x-mean_x)**2/Sxx) if Sxx != 0  else 0.0
     #pred = t * RMSE * np.sqrt(1+1./n + (x-mean_x)**2/Sxx)
     return conf
 
@@ -120,6 +120,8 @@ class FitFunction():
 
     def fit_function(self,x,y,yerr):
 	"""fitting the model"""
+	print " --- x", x
+	print " --- y", y
 	popt, pcov = curve_fit(self.fit, x, y, sigma=yerr)
 	
 	std_err = np.sqrt(np.diag(pcov)) # parameters standard error
@@ -135,9 +137,6 @@ class FitFunction():
 	t_value = popt/std_err
 	p_value = stats.chi2.cdf(chi_sq, dof)
 	Z = scipy.stats.norm.ppf(1-p_value)
-
-	print chi_sq, dof, chi_sq_wg
-	print p_value, Z
 
 	self.params=popt
 	self.rmse=RMSE
@@ -166,7 +165,7 @@ class MyTreeView():
 
         # Add buttons
         button_add1 = gtk.Button('Add row')		# ADD 1 ROW
-        button_add10 = gtk.Button('Add 10 rows')	# ADD 10 ROWS
+        button_clear = gtk.Button('Clear data')		# ADD 10 ROWS
         button_load = gtk.Button("Load data")		# LOAD FILE
         button_save = gtk.Button("Save data")		# LOAD FILE
 
@@ -174,14 +173,14 @@ class MyTreeView():
         hbox_buttons = gtk.HBox(False,5)		# layout packaging
         hbox_buttons2 = gtk.HBox(False,5)		# layout packaging
         hbox_buttons.pack_start(button_add1, True, True)
-        hbox_buttons.pack_start(button_add10, True, True)
+        hbox_buttons.pack_start(button_clear, True, True)
         hbox_buttons2.pack_start(button_load, True, True)
         hbox_buttons2.pack_start(button_save, True, True)
         context.vbox2.pack_start(hbox_buttons2, False, False)
         context.vbox2.pack_end(hbox_buttons, False, False)
 
         button_add1.connect('clicked',self.add_rows,1)	# SIGNALS HANDLING
-        button_add10.connect('clicked',self.add_rows,10)
+        button_clear.connect('clicked',self.clear_rows)
         button_load.connect('clicked',self.on_load_file)
         button_save.connect('clicked',self.on_save_file)
 
@@ -229,7 +228,7 @@ class MyTreeView():
 	    newcol = treeview.get_column(colnum)
 	    if path[0]+1 < nrows :
 		newpath=(path[0]+1,)
-	    treeview.set_cursor(newpath, newcol, True)
+		treeview.set_cursor(newpath, newcol, True)
 
         else:
             pass
@@ -242,12 +241,23 @@ class MyTreeView():
         adj = self.scrolled_window.get_vadjustment()
         adj.set_value( adj.upper - adj.page_size )
 
+    def clear_rows(self,button):
+        self.context.log('data table cleared')
+	#self.model = [[0,0,0,0,0]]
+	self.model.clear()
+	self.model.append([0,0,0,0,0])
+	print self.data.table
+	self.data.table = np.array([[0],[0],[0],[0],[0]], dtype='f')
+	print
+	print self.data.table
+        adj = self.scrolled_window.get_vadjustment()
+        adj.set_value( adj.upper - adj.page_size )
+
     def edited_cb(self, cell, path, new_content, user_data):
         column = user_data
         liststore=self.model
-        print 'edited_cb', self.model
-        print 'edited_cb', len(self.model)
-        print path, int(path)
+        print 'edited_cb', len(self.model), path
+	print new_content
         new_content=new_content.replace(",",".")
         if isfloat(new_content) and float(new_content)>=0.0 :
 	    if column > 0 and column < 3:
@@ -259,7 +269,7 @@ class MyTreeView():
             if float(liststore[path][1]) != 0:
                 liststore[path][3] = '%.3f' % (float(liststore[path][2]) / float(liststore[path][1]))
                 liststore[path][4] = '%.3f' % (np.sqrt(float(liststore[path][2])) / float(liststore[path][1]))
-                self.data.table[3][int(path)] = self.data.table[2][int(path)] / self.data.table[1][int(path)]
+                self.data.table[3][int(path)] = float(self.data.table[2][int(path)]) / float(self.data.table[1][int(path)])
                 self.data.table[4][int(path)] = np.sqrt(self.data.table[2][int(path)]) / self.data.table[1][int(path)]
             else:
                 liststore[path][3]='%.3f' % (0.0)
@@ -562,8 +572,6 @@ class FunctionTab():
 	salpha = float(self.entry_salpha.get_text()) if isfloat(self.entry_salpha.get_text()) else 0.0
 	sbeta = float(self.entry_sbeta.get_text()) if isfloat(self.entry_sbeta.get_text()) else 0.0
 
-	print c, alpha, beta, sc, salpha, sbeta
-
 	if self.fitfunction.mode=="quadratic":
 	    self.fitfunction.params=[beta,alpha,c]
 	    self.fitfunction.std_err=[sbeat,salpha,sc]
@@ -749,8 +757,17 @@ class Plotter() :
 	x = np.arange(-0.1, max(20,max(self.data.get_xdata()))*1.1, 0.05)
 
 	if (self.fit_toggle=='active'):
-	    self.fitfunction.fit_function(self.data.get_xdata(),self.data.get_ydata(),self.data.get_yerr())
-	    self.context.functiontab.function_changed()
+	    if len(self.data.get_xdata()) >= 3 :
+		print "before fit", self.fitfunction.params
+		print "before fit", self.fitfunction.params
+		print "xdata", self.data.get_xdata()
+		print "ydata", self.data.get_ydata()
+		self.fitfunction.fit_function(self.data.get_xdata(),self.data.get_ydata(),self.data.get_yerr())
+		print "after fit", self.fitfunction.params
+		print "after fit", self.fitfunction.params
+		self.context.functiontab.function_changed()
+	    else :
+		self.context.log("Too few data to fit the function!")
 
 	if self.function_toggle==1:
 	    y = self.fitfunction.func(x,self.fitfunction.params)
@@ -774,6 +791,9 @@ class Plotter() :
 
 	self.fig.subplots_adjust(left=0.13, right=0.96, top=0.91, bottom=0.13, hspace=0.04)
 	self.canvas.draw()
+
+	print self.fitfunction.params
+	print self.fitfunction.std_err
 
 
 class MPLOptions() :

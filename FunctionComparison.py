@@ -645,7 +645,7 @@ class UserInterface(gtk.Window):
         
         gtk.Window.__init__(self)
         self.set_default_size(800, 800)
-        self.connect('destroy', lambda win: gtk.main_quit())
+        #self.connect('destroy', lambda win: gtk.main_quit())
         
         self.set_title('DOSEMATIC v1.0 -- Function Comparison')
 
@@ -795,6 +795,6 @@ class UserInterface(gtk.Window):
 
 #______________MAIN______________#
 
-manager = UserInterface()
-manager.show_all()
-gtk.main()
+#manager = UserInterface()
+#manager.show_all()
+#gtk.main()

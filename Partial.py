@@ -36,7 +36,7 @@ class Data():
 
     def read_data_init(self):
 
-        ifile  = open('data/partial.csv', "rb")
+        ifile  = open('data/partial_dic.csv', "rb")
         reader = csv.reader(ifile, delimiter=',')
         rownum = 0
         data=[]
@@ -52,7 +52,7 @@ class Data():
         data = [list(x) for x in data]
         self.table = array(data)
 
-        ifile  = open('data/partial.csv', "rb")
+        ifile  = open('data/partial_rings.csv', "rb")
         reader = csv.reader(ifile, delimiter=',')
         data=[]
         iterreader = iter(reader)
@@ -65,7 +65,7 @@ class Data():
         data = [list(x) for x in data]
         self.table_rings = array(data)
 
-        ifile  = open('data/partial.csv', "rb")
+        ifile  = open('data/partial_acen.csv', "rb")
         reader = csv.reader(ifile, delimiter=',')
         data=[]
         iterreader = iter(reader)
@@ -83,9 +83,14 @@ class Data():
         ifile  = open(filename, "rb")
         reader = csv.reader(ifile, delimiter=',')
         data=[]
+	rownum=0
         for row in reader:
-            row =  [float(x) for x in row]
-            data.append(list(row))
+            if rownum == 0:
+                self.labels_input = row
+                rownum += 1
+            else:
+                row =  [float(x) for x in row]
+                data.append(list(row))
         ifile.close()
         data = zip(*data)
         data = [list(x) for x in data]
@@ -96,7 +101,54 @@ class Data():
         elif 'acentrics' in tag :
             self.table_acentrics = array(data)
 
-        self.numRows_input=max([len(self.table),len(self.table_rings),len(self.table_acentrics)])
+        self.numRows_input=max([len(self.table[0]),len(self.table_rings[0]),len(self.table_acentrics[0])])
+
+	if len(data)==0:
+	    return 0
+        elif len(data)==1:
+	    return 1
+        elif len(data)==2:
+	    return 2
+
+	return 3
+
+class MyFileChooser() :
+
+    def __init__(self):
+	file_chooser = gtk.FileChooserDialog("Open..",
+		None,
+		gtk.FILE_CHOOSER_ACTION_OPEN,
+		(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+		    gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+	file_chooser.set_default_response(gtk.RESPONSE_OK)
+
+        filtr = gtk.FileFilter()
+        filtr.set_name("All files")
+        filtr.add_pattern("*")
+        file_chooser.add_filter(filtr)
+
+        filtr = gtk.FileFilter()
+        filtr.set_name("Images")
+        filtr.add_mime_type("image/png")
+        filtr.add_mime_type("image/jpeg")
+        filtr.add_mime_type("image/gif")
+        filtr.add_pattern("*.png")
+        filtr.add_pattern("*.jpg")
+        filtr.add_pattern("*.gif")
+        filtr.add_pattern("*.tif")
+        filtr.add_pattern("*.xpm")
+        file_chooser.add_filter(filtr)
+
+        filtr = gtk.FileFilter()
+        filtr.set_name("Data")
+        filtr.add_mime_type("image/csv")
+        filtr.add_pattern("*.csv")
+        filtr.add_pattern("*.dat")
+        file_chooser.add_filter(filtr)
+        self.fc = file_chooser
+
+    def get_filechooser(self):
+	        return self.fc
 
 
 class Results():
@@ -228,14 +280,22 @@ class UserInterface(gtk.Window):
         vbox2.pack_start(self.notebook, True, True)
 
         # -> TREE VIEW BUTTONS
-        button_add1 = gtk.Button('Add row')             # ADD 1 ROW
-        button_add10 = gtk.Button('Add 10 rows')        # ADD 10 ROWS
-        hbox_buttons = gtk.HBox(False,5)                # layout packaging
-        hbox_buttons.pack_start(button_add1, True, True)
-        hbox_buttons.pack_start(button_add10, True, True)
-        vbox2.pack_end(hbox_buttons, False, False)
+        button_add1 = gtk.Button('Add row')    
+        button_clear = gtk.Button('Clear data')
+        button_save = gtk.Button('Export to csv')
+        button_load = gtk.Button('Load csv')
+
+	grid = gtk.Table(2,2)
+	grid.attach(button_add1, 0,1,0,1)
+	grid.attach(button_clear, 1,2,0,1)
+	grid.attach(button_save, 0,1,1,2)
+	grid.attach(button_load, 1,2,1,2)
+
+        vbox2.pack_end(grid, False, False)
         button_add1.connect('clicked',self.add_rows,1)  # SIGNALS HANDLING
-        button_add10.connect('clicked',self.add_rows,10)
+        button_clear.connect('clicked',self.clear_all)
+        button_save.connect('clicked',self.save_input,self.notebook)
+        button_load.connect('clicked',self.load_input,self.notebook)
         #__________________________________________________________________
 
         label3 = gtk.Label('Output')
@@ -255,6 +315,15 @@ class UserInterface(gtk.Window):
 
         vbox3.pack_start(self.output_sw, True, True)
         #__________________________________________________________________
+
+        button_save_out = gtk.Button('Export to csv')
+
+	grid_out = gtk.Table(2,1)
+	grid_out.attach(button_save_out, 0,1,0,1)
+
+        vbox3.pack_end(grid_out, False, False)
+
+        button_save_out.connect('clicked',self.save_output)
  
         # TEXT SCREEN______________________________________________________
         self.text = LogConsole.LogConsole(self)
@@ -269,6 +338,96 @@ class UserInterface(gtk.Window):
         """Logging into main log console"""
         self.text.log(txt)
 
+    def clear_rows(self,button,notebook):
+
+	idx = notebook.get_current_page()
+	if idx == 0 :
+	    model = self.input_treeview.get_model()
+	    table = self.data.table
+	elif idx == 1 :
+	    model = self.rings_treeview.get_model()
+	    table = self.data
+	elif idx == 2 :
+	    model = self.acen_treeview.get_model()
+	    table = self.data.table_acentrics
+        model.clear()
+        model.append([0,0,0,0,0,0,0,0,0,0,0,0])
+        table = np.array([[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]], dtype='f')
+
+    def clear_all(self,button):
+
+	model1 = self.input_treeview.get_model()
+	table1 = self.data.table
+	model2 = self.rings_treeview.get_model()
+	table2 = self.data.table_rings
+	model3 = self.acen_treeview.get_model()
+	table3 = self.data.table_acentrics
+        model1.clear()
+        model2.clear()
+        model3.clear()
+        model1.append([0,0,0,0,0,0,0,0,0,0,0,0])
+        model2.append([0,0,0,0,0,0,0,0,0,0,0,0])
+        model3.append([0,0,0,0,0,0,0,0,0,0,0,0])
+        table1 = np.array([[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]], dtype='f')
+        table2 = np.array([[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]], dtype='f')
+        table3 = np.array([[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]], dtype='f')
+
+	self.output_model.clear()
+	self.output_model.append(13*[0])
+	self.results.numRows_output=1
+
+    def save_input(self,button,notebook) :
+	self.text.log("saving input")
+	self.text.log(str(notebook.get_current_page()))
+
+    def load_input(self,button,notebook) :
+	self.text.log("loading input")
+
+	tag=""
+	if notebook.get_current_page()==0 :
+	    tag='dicentrics'
+	    model=self.input_model
+	    treeview=self.input_treeview
+	elif notebook.get_current_page()==1 :
+	    tag='rings'
+	    model=self.rings_model
+	    treeview=self.rings_treeview
+	elif notebook.get_current_page()==2 :
+	    tag='acentrics'
+	    model=self.acen_model
+	    treeview=self.acen_treeview
+
+	self.text.log(str(notebook.get_current_page())+"\t"+tag)
+
+        fc = MyFileChooser()
+        file_chooser = fc.get_filechooser()
+
+        response = file_chooser.run()
+        if response == gtk.RESPONSE_OK:
+	    path = file_chooser.get_filename()
+            if ".csv" in path:
+
+		read_data_flag = self.data.read_data_csv(path,tag)
+                if read_data_flag == 0:
+		    self.context.log("error while loading file: "+path)
+                    return
+                elif read_data_flag <= 2:
+		    self.context.log("error while reading columns in file: "+path+". File not loaded! Data table left unmodified.")
+                    return
+                self.text.log("Loaded data file: "+path)
+
+		model = self.create_input_model(tag)
+		treeview.set_model(model)
+
+            else :
+		self.text.log("___Wrong file format!___")
+            file_chooser.destroy()
+        elif response == gtk.RESPONSE_CANCEL:
+	    file_chooser.destroy()
+
+
+    def save_output(self,button) :
+	self.text.log("saving output")
 
     def add_input_colums(self,treeview,model):
         """cell renderer"""
@@ -285,6 +444,36 @@ class UserInterface(gtk.Window):
             column.set_fixed_width(42)
             column.set_expand(False)
             treeview.append_column(column)
+
+
+
+            # TODO -- something's fucked up!
+#	    treeview.connect("key-release-event", self.on_navigate_key)
+#
+#    def on_navigate_key(self, treeview, event):
+#        keyname = gdk.keyval_name(event.keyval)
+#        path, col = treeview.get_cursor()
+#        columns = [c for c in treeview.get_columns()] 
+#        colnum = columns.index(col)        
+#        nrows = len(treeview.get_model())
+#
+#        if keyname == 'Tab':
+#            newcol = treeview.get_column((colnum+1)%3)
+#            newpath=path
+#            treeview.set_cursor(newpath, newcol, True)
+#
+#        elif keyname == 'Return':
+#            newcol = treeview.get_column(colnum)
+#            if path[0]+1 < nrows :
+#                newpath=(path[0]+1,)
+#                treeview.set_cursor(newpath, newcol, True)
+#
+#        else:
+#            pass
+#
+
+
+
             
     def cell_coloring(self, column, renderer, model, itr, data) :
         utest_value = float(model.get_value(itr, 7))
@@ -315,10 +504,15 @@ class UserInterface(gtk.Window):
     def edited_cb(self, cell, path, new_content, user_data):
         """handling signal of edited cell"""
         liststore, column = user_data
+
         if isfloat(new_content) and float(new_content)>=0.0 :
+
             liststore[path][column] = float(new_content)
             self.data.table[int(column)][int(path)] = float(new_content)
-            print "data[", column, "][", path, "]  = ", float(new_content)
+
+            print "data[", column, "][", path, "]  = ", self.data.table[int(column)][int(path)]
+            print "model[", column, "][", path, "]  = ", liststore[path][column]
+
         self.calculate_output()
             
     def calculate_output(self) :
